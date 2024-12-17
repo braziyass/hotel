@@ -5,6 +5,8 @@
 std::vector<Chambre> chambres;
 Chambre::Chambre() : numeroChambre(0), numeroTelephone("") {}
 
+Chambre::Chambre(int numero, const std::string& telephone) : numeroChambre(numero), numeroTelephone(telephone) {}
+
 void Chambre::saisir() {
     std::cout << "Entrez le numéro de la chambre: ";
     std::cin >> numeroChambre;

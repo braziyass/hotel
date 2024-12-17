@@ -4,7 +4,8 @@
 #include <vector>
 
 std::vector<Client> clients;
-Client::Client() : id(0), name(""), surname(""), address("") {}
+Client::Client() : id(), name(""), surname(""), address("") {}
+Client::Client(int id, const std::string& name, const std::string& surname, const std::string& address) : id(id), name(name), surname(surname), address(address) {}
 
 void Client::setId(int id) {
     this->id = id;

@@ -15,6 +15,8 @@ private:
 public:
     // Constructeur par défaut
     Chambre();
+    Chambre(int numero, const std::string& telephone);
+ 
 
     // Getters
     int getNumeroChambre() const;

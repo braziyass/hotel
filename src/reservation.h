@@ -41,9 +41,9 @@ public:
     void setClient(Client* client);
     bool getReservationState() const;
     void setReservationState(bool state);
-    std::string getStartDate() const;
+    std::tm getStartDate() const;
     void setStartDate(const std::string& date);
-    std::string getEndDate() const;
+    std::tm getEndDate() const;
     void setEndDate(const std::string& date);
 };
 

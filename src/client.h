@@ -3,7 +3,7 @@
 
 #include <string>
 #include <iostream>
-
+#include <vector>
 
 class Client {
 private:
@@ -16,6 +16,7 @@ private:
 public:
     // Default constructor
     Client();
+    Client(int id, const std::string& name, const std::string& surname, const std::string& address);
 
     // Getters
     int getId() const;

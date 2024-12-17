@@ -1,7 +1,5 @@
 #include "reservation.h"
-
 #include "chambre.h"
-
 #include "client.h"
 #include <iostream>
 #include <vector>
@@ -10,30 +8,30 @@
 #include <ctime>
 #include <algorithm>
 
-// std::vector<Reservation> reservations;
-
 std::vector<Reservation> reservations;
 extern std::vector<Chambre> chambres;
 extern std::vector<Client> clients;
 
 #define MAX_CHAMBRES 10 // Define the maximum number of rooms
 
-Reservation::Reservation() : reservationCode(0), numberOfRooms(0), reservationState(false) {}
+Reservation::Reservation() : reservationCode(0), numberOfRooms(0), client(nullptr), reservationState(false) {
+    std::memset(&startDate, 0, sizeof(startDate));
+    std::memset(&endDate, 0, sizeof(endDate));
+}
 
 void Reservation::saisirReservation() {
     std::cout << "Entrez le code de réservation: ";
     std::cin >> reservationCode;
     std::cout << "Entrez le nombre de chambres réservées: ";
     std::cin >> numberOfRooms;
-    for (int i = 0; i < numberOfRooms; i++)
-    {
-        std::cout << "Entrez le numero de chambres que vous voulez réservé: ";
+    for (int i = 0; i < numberOfRooms; i++) {
+        std::cout << "Entrez le numero de chambres que vous voulez réserver: ";
         int numeroChambre;
         std::cin >> numeroChambre;
         for (auto& chambre : chambres) {
             if (chambre.getNumeroChambre() == numeroChambre) {
                 chambre.setEstLibre(false);
-                reservedRooms.push_back(chambre);
+                this->reservedRooms.push_back(chambre);
                 break;
             }
         }
@@ -41,21 +39,31 @@ void Reservation::saisirReservation() {
     std::cout << "Entrez le numero de client qui veux effectuer la reservation: ";
     int idClient;
     std::cin >> idClient;
-    for (auto& client : clients) {
-        if (client.getId() == idClient) {
-            this->client = &client;
-            client.setNumReservations(client.getNumReservations() + 1);
+    client = nullptr; // Initialize client pointer to nullptr
+    for (auto& c : clients) { // Rename loop variable to 'c'
+        if (c.getId() == idClient) {
+            client = &c;
+            c.setNumReservations(c.getNumReservations() + 1);
             break;
         }
     }
-    
+    if (client == nullptr) {
+        std::cerr << "Erreur: Client non trouvé." << std::endl;
+        return;
+    }
+
     // Saisir les dates de début et de fin
     std::cout << "Entrez la date de début (jj mm aaaa hh:mm): ";
     std::cin >> startDate.tm_mday >> startDate.tm_mon >> startDate.tm_year >> startDate.tm_hour >> startDate.tm_min;
-    startDate.tm_year -= 1900; // Ajustement pour tm_year
+    startDate.tm_mon -= 1; // Adjust month from 1-12 to 0-11
+    startDate.tm_year -= 1900; // Adjust year to be years since 1900
+    startDate.tm_sec = 0; // Initialize seconds to 0
+
     std::cout << "Entrez la date de fin (jj mm aaaa hh:mm): ";
     std::cin >> endDate.tm_mday >> endDate.tm_mon >> endDate.tm_year >> endDate.tm_hour >> endDate.tm_min;
-    endDate.tm_year -= 1900; // Ajustement pour tm_year
+    endDate.tm_mon -= 1; // Adjust month from 1-12 to 0-11
+    endDate.tm_year -= 1900; // Adjust year to be years since 1900
+    endDate.tm_sec = 0; // Initialize seconds to 0
 }
 
 bool Reservation::verifierChambreReserve(const Chambre& chambre) {
@@ -78,14 +86,18 @@ bool Reservation::ajouterChambre(const Chambre& chambre) {
 
 void Reservation::afficherReservation() {
     std::cout << "Code de réservation: " << reservationCode << std::endl;
-    std::cout << "Client: " << client->getName() << " " << client->getSurname() << std::endl;
+    if (client != nullptr) {
+        std::cout << "Client: " << client->getName() << " " << client->getSurname() << std::endl;
+    } else {
+        std::cout << "Client: Non trouvé" << std::endl;
+    }
     std::cout << "Chambres réservées: " << std::endl;
     for (const auto& chambre : reservedRooms) {
         chambre.afficher();
     }
     std::cout << "Date de début: " << std::asctime(&startDate);
     std::cout << "Date de fin: " << std::asctime(&endDate);
-    std::cout << "État de la réservation: " << (reservationState ? "Validée" : "Annulée") << std::endl;
+    std::cout << "État de la réservation: " << (reservationState ? "Validée" : "Pas encore validée") << std::endl;
 }
 
 double Reservation::calculerDuree() {
@@ -147,24 +159,20 @@ void Reservation::setReservationState(bool state) {
     reservationState = state;
 }
 
-std::string Reservation::getStartDate() const {
-    char buffer[80];
-    strftime(buffer, 80, "%d-%m-%Y %H:%M", &startDate);
-    return std::string(buffer);
+std::tm Reservation::getStartDate() const {
+    return startDate;
 }
 
 void Reservation::setStartDate(const std::string& date) {
     std::istringstream ss(date);
-    ss >> std::get_time(&startDate, "%d-%m-%Y %H:%M");
+    ss >> std::get_time(&startDate, "%d %m %Y %H:%M");
 }
 
-std::string Reservation::getEndDate() const {
-    char buffer[80];
-    strftime(buffer, 80, "%d-%m-%Y %H:%M", &endDate);
-    return std::string(buffer);
+std::tm Reservation::getEndDate() const {
+    return endDate;
 }
 
 void Reservation::setEndDate(const std::string& date) {
     std::istringstream ss(date);
-    ss >> std::get_time(&endDate, "%d-%m-%Y %H:%M");
+    ss >> std::get_time(&endDate, "%d %m %Y %H:%M");
 }

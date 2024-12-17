@@ -98,6 +98,7 @@ void Reservation::afficherReservation() {
     std::cout << "Date de début: " << std::asctime(&startDate);
     std::cout << "Date de fin: " << std::asctime(&endDate);
     std::cout << "État de la réservation: " << (reservationState ? "Validée" : "Pas encore validée") << std::endl;
+    std::cout << "Durée de la réservation: " << calculerDuree() << " jours" << std::endl;
 }
 
 double Reservation::calculerDuree() {
@@ -168,6 +169,7 @@ void Reservation::setStartDate(const std::string& date) {
     ss >> std::get_time(&startDate, "%d %m %Y %H:%M");
 }
 
+
 std::tm Reservation::getEndDate() const {
     return endDate;
 }
@@ -175,4 +177,12 @@ std::tm Reservation::getEndDate() const {
 void Reservation::setEndDate(const std::string& date) {
     std::istringstream ss(date);
     ss >> std::get_time(&endDate, "%d %m %Y %H:%M");
+}
+
+std::vector<Chambre> Reservation::getReservedRooms() const {
+    return reservedRooms;
+}
+
+void Reservation::setReservedRooms(const std::vector<Chambre>& rooms) {
+    reservedRooms = rooms;
 }

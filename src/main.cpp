@@ -30,7 +30,8 @@ void afficherMenuReservation() {
     std::cout << "6. Tester si un client a deja effectué une reservation" << std::endl;
     std::cout << "7. Afficher les reservations effectuées aujourd'hui" << std::endl;
     std::cout << "8. Afficher les reservations qui seront expirées aujourd'hui" << std::endl;
-    std::cout << "9. Menu Principal" << std::endl;
+    std::cout << "9. Valider Reservation" << std::endl;
+    std::cout << "10. Menu Principal" << std::endl;
     std::cout << "0. Quitter" << std::endl;
 }
 
@@ -39,9 +40,9 @@ int main() {
 
     int choix;
 
-    Client client1(1, "John", "Doe", "123 Main St");
+    Client client1(1, "yassine", "labrazi", "Sala al jadida");
     clients.push_back(client1);
-    Client client2(2, "Jane", "Smith", "456 Elm St");
+    Client client2(2, "simo", "benazza", "Rabat");
     clients.push_back(client2);
 
     Chambre chambre1(1, "555-1234");
@@ -165,17 +166,25 @@ int main() {
                                 }
                                 break;
 
+
                             case 5:
                                 std::cout << "Quelle reservation voulez-vous supprimer (ID): " << std::endl;
-                                
                                 std::cin >> idReservation;
                                 for (auto it = reservations.begin(); it != reservations.end(); ++it) {
                                     if (it->getReservationCode() == idReservation) {
+                                        // Set estLibre to true for all reserved rooms
+                                        for (auto& chambre : it->getReservedRooms()) {
+                                            for (auto& c : chambres) {
+                                                if (c.getNumeroChambre() == chambre.getNumeroChambre()) {
+                                                    c.setEstLibre(true);
+                                                    break;
+                                                }
+                                            }
+                                        }
                                         reservations.erase(it);
                                         break;
                                     }
                                 }
-
                                 break;
 
                             case 6:
@@ -208,6 +217,7 @@ int main() {
                                     }
                                 }
                                 break;
+
                             
                             case 8:
                                 std::cout << "Réservations expirées aujourd'hui:" << std::endl;
@@ -216,6 +226,16 @@ int main() {
                                     std::tm* today = std::localtime(&now);
                                     if (today->tm_mday == reservation.getEndDate().tm_mday && today->tm_mon == reservation.getEndDate().tm_mon && today->tm_year == reservation.getEndDate().tm_year) {
                                         reservation.afficherReservation();
+                                    }
+                                }
+                                break;
+                            
+                            case 9:
+                                std::cout << "Quelle reservation voulez-vous valider (ID): " << std::endl;
+                                std::cin >> idReservation;
+                                for (auto& reservation : reservations) {
+                                    if (reservation.getReservationCode() == idReservation) {
+                                        reservation.validerReservation();
                                     }
                                 }
                                 break;

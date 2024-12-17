@@ -45,6 +45,8 @@ public:
     void setStartDate(const std::string& date);
     std::tm getEndDate() const;
     void setEndDate(const std::string& date);
+    std::vector<Chambre> getReservedRooms() const;
+    void setReservedRooms(const std::vector<Chambre>& rooms);
 };
 
 extern std::vector<Reservation> reservations;
